@@ -1,0 +1,39 @@
+:host {
+  width: 100%;
+  display: block;
+  font-family: 'RobotoDraft', sans-serif;
+  color: rgba(255, 255, 255, .7);
+  font-weight: 100;
+ }
+:host(.core-selected){
+	background-color: #EC8D44;
+}
+
+:host /deep/ div.button-content {
+	  padding: 0.4em .5em;
+}
+
+/* To ensure your styling works under the Shadow DOM polyfill, see
+   www.polymer-project.org/docs/polymer/styling.html#directives */
+polyfill-next-selector { content: ':host > h2'; }
+::content h2 {
+  color: blue;
+}
+
+/* MENU */
+paper-item {
+  font-size: .9em;
+  vertical-align: middle;
+}
+paper-item core-icon {
+	margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+core-toolbar paper-icon-button, core-toolbar paper-icon {
+  vertical-align: middle;
+}
+
+@media (min-width: 481px) {
+
+}

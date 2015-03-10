@@ -1,0 +1,50 @@
+<link rel="import" href="../font-roboto/roboto.html">
+<link rel="import" href="../core-icon/core-icon.html">
+<link rel="import" href="../paper-item/paper-item.html">
+
+<!--
+sc-sse is webcomponent to Server Side Events of HTML5.
+
+##### Example
+
+    <sc-sse stream="/stream/"></sc-sse>
+
+@element sc-sse
+@blurb Element providing an interface to consume updates by Server Side Events.
+@status beta
+@homepage http://github.com/siscomando/sc-sse
+-->
+<polymer-element name="sc-sse"  attributes="notitle author">
+  <template>
+    <link rel="stylesheet" href="sc-sse.css">                                
+  </template>
+
+  <script>
+    Polymer({     
+      /**
+       * The `author` attribute sets an initial author
+       *
+       * @attribute author
+       * @type string
+       * @default 'Horacio Ibrahim'
+       */     
+      author: 'Horacio Ibrahim',      
+      publish: {
+
+      },
+      /* the best place to the constructor for array or object */
+      created: function() {
+        // initialize but it not is turned public to use by users of the element
+        // to turn public to use attributes or publish.
+      },
+      ready: function() {
+        // Ready is a lifecycle callback.
+        // You can do setup work in here.
+        // More info: http://www.polymer-project.org/docs/polymer/polymer.html#lifecyclemethods
+        // simple test alert(this.issueInfo.register);
+      },
+    });
+
+  </script>
+
+</polymer-element>

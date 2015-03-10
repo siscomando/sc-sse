@@ -1,0 +1,27 @@
+{
+  "name": "sc-sse",
+  "version": "0.0.1",
+  "authors": [
+    "Horacio Ibrahim <horacioibrahim@gmail.com>"
+  ],
+  "description": "sc-sse is webcomponent to Server Side Events of HTML5",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "sc-sse"
+  ],
+  "main": "sc-sse.html",
+  "license": "MIT",
+  "homepage": "https://github.com/siscomando/sc-sse/",
+  "ignore": [
+    "/.*",
+    "/tests/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.5.4",
+  },
+  "devDependencies": {
+    "web-component-tester": "*"
+  }
+}
