@@ -41,7 +41,7 @@ see more on SSE: http://www.html5rocks.com/en/tutorials/eventsource/basics/?redi
        * @default ''
        */                   
       publish: {
-        stream: 'http://localhost:8080/stream',
+        stream: '',
         channel: 'message',
         alias: 'default'
       },
@@ -58,9 +58,15 @@ see more on SSE: http://www.html5rocks.com/en/tutorials/eventsource/basics/?redi
         var stream = this.stream;
         var callback = this.fire; //this.fire;
         var channel = this.channel;
-        var source = new EventSource(stream);
         var el = this;
-        this.makeRead(source, channel, callback, el);
+
+        try {
+          var source = new EventSource(stream);  
+          this.makeRead(source, channel, callback, el);
+        } catch (x) {
+          console.warn('sc-sse caught an exception trying create new EventSource.');
+          console.warn(x);
+        }
       },
       makeRead: function(source, channel, callback, onNode) {
         source.addEventListener(channel, function(e) {
