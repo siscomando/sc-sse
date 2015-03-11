@@ -14,23 +14,35 @@ sc-sse is webcomponent to Server Side Events of HTML5.
 @status beta
 @homepage http://github.com/siscomando/sc-sse
 -->
-<polymer-element name="sc-sse"  attributes="notitle author">
-  <template>
-    <link rel="stylesheet" href="sc-sse.css">                                
-  </template>
-
+<polymer-element name="sc-sse" hidden attributes="notitle author stream channel alias">
   <script>
-    Polymer({     
+    Polymer('sc-sse', {     
       /**
        * The `author` attribute sets an initial author
        *
        * @attribute author
        * @type string
        * @default 'Horacio Ibrahim'
-       */     
-      author: 'Horacio Ibrahim',      
+       */ 
+      author: 'Horacio Ibrahim', 
+      /**
+       * The `alias` is name to recognize what sc-sse element fired.
+       *
+       * @attribute alias
+       * @type String
+       * @default default
+       */       
+      /**
+       * The `stream` attribute sets an url to get updates (JSON)
+       *
+       * @attribute stream
+       * @type string
+       * @default ''
+       */                   
       publish: {
-
+        stream: 'http://localhost:8080/stream',
+        channel: 'message',
+        alias: 'default'
       },
       /* the best place to the constructor for array or object */
       created: function() {
@@ -42,9 +54,19 @@ sc-sse is webcomponent to Server Side Events of HTML5.
         // You can do setup work in here.
         // More info: http://www.polymer-project.org/docs/polymer/polymer.html#lifecyclemethods
         // simple test alert(this.issueInfo.register);
+        var stream = this.stream;
+        var callback = this.fire; //this.fire;
+        var channel = this.channel;
+        var source = new EventSource(stream);
+        var el = this;
+        this.makeRead(source, channel, callback, el);
+      },
+      makeRead: function(source, channel, callback, onNode) {
+        source.addEventListener(channel, function(e) {
+          callback('sc-sse-response', {response: e.data, alias: onNode.alias}, onNode);
+        });
       },
     });
-
   </script>
 
 </polymer-element>
