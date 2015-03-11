@@ -1,6 +1,5 @@
-<link rel="import" href="../font-roboto/roboto.html">
-<link rel="import" href="../core-icon/core-icon.html">
-<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../polymer/polymer.html">
+
 
 <!--
 sc-sse is webcomponent to Server Side Events of HTML5.
@@ -11,33 +10,38 @@ sc-sse is webcomponent to Server Side Events of HTML5.
 
 @element sc-sse
 @blurb Element providing an interface to consume updates by Server Side Events
-see more on SSE: http://www.html5rocks.com/en/tutorials/eventsource/basics/?redirect_from_locale=pt.
 @status beta
 @homepage http://github.com/siscomando/sc-sse
 -->
 <polymer-element name="sc-sse" hidden attributes="notitle author stream channel alias">
   <script>
-    Polymer('sc-sse', {     
+    Polymer('sc-sse', { 
+       /**
+       * Fired when a reply is returned by Server Side Event.
+       *
+       *
+       * @event sc-sse-response
+       */        
       /**
        * The `author` attribute sets an initial author
        *
        * @attribute author
-       * @type string
+       * @type String
        * @default 'Horacio Ibrahim'
        */ 
       author: 'Horacio Ibrahim', 
       /**
-       * The `alias` is name to recognize what sc-sse element fired.
+       * The `alias` is name for recognize one of multiple sc-sse element fired.
        *
        * @attribute alias
        * @type String
        * @default default
        */       
       /**
-       * The `stream` attribute sets an url to get updates (JSON)
+       * The `stream` attribute sets an url to get updates
        *
        * @attribute stream
-       * @type string
+       * @type String
        * @default ''
        */                   
       publish: {
@@ -45,16 +49,7 @@ see more on SSE: http://www.html5rocks.com/en/tutorials/eventsource/basics/?redi
         channel: 'message',
         alias: 'default'
       },
-      /* the best place to the constructor for array or object */
-      created: function() {
-        // initialize but it not is turned public to use by users of the element
-        // to turn public to use attributes or publish.
-      },
       ready: function() {
-        // Ready is a lifecycle callback.
-        // You can do setup work in here.
-        // More info: http://www.polymer-project.org/docs/polymer/polymer.html#lifecyclemethods
-        // simple test alert(this.issueInfo.register);
         var stream = this.stream;
         var callback = this.fire; //this.fire;
         var channel = this.channel;
@@ -68,6 +63,16 @@ see more on SSE: http://www.html5rocks.com/en/tutorials/eventsource/basics/?redi
           console.warn(x);
         }
       },
+      /**
+       * The `makeRead` make connection with Server Side Event stream.
+       *
+       * 
+       * @method makeRead
+       * @param source an instance of EventSource
+       * @param channel a type of event 
+       * @param callback a callback for to work with polymer objects
+       * @param onNode this current polymer element
+       */       
       makeRead: function(source, channel, callback, onNode) {
         source.addEventListener(channel, function(e) {
           callback('sc-sse-response', {response: e.data, alias: onNode.alias}, onNode);
