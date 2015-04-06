@@ -18,9 +18,14 @@ Usage
         		// channel is useful when to receives from one URL stream 
         		// that returns differents data as users, comments or issues 
         		// updates where theses are implemented in server side.
-        		console.log("Reply from channel[userlogon]: " + e.detail.response);
-        		// alias is useful when multiple sc-sse in same page
-        		console.log("Alias: " + e.detail.alias);
+        		console.log("Reply from channel[" + channel "]: " + e.detail.response);
+        		// alias is useful when multiple sc-sse in same page.
+                        // alias it's a name for the data returned by sc-sse 
+                        // custom element.
+                        if (e.detail.alias == "updates") {
+                                console.log("Returned data from updates sc-sse");        
+                        }
+        		
         	});
         </script>
 
