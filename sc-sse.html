@@ -20,6 +20,9 @@ about SSE see:
 -->
 <polymer-element name="sc-sse" hidden attributes="notitle author stream event alias">
   <script>
+    'use strict'
+    url= require('url')
+  
     Polymer('sc-sse', { 
        /**
        * Fires when an event is received from Server-Sent Event stream.
@@ -79,7 +82,10 @@ about SSE see:
        */       
       makeRead: function(source, event, callback, that) {
         source.addEventListener(event, function(e) {
-          if (e.origin != that.stream) {
+          var u= url.parse(that.stream)
+          var s= u.protocol +"://" +u.host
+          //if (e.origin != that.stream)
+          if (e.origin != s)
             console.log("sc-sse: discarding event from alien source " +e.origin)
           else
             callback('sc-sse-response', {response:e.data, alias:that.alias}, that);
