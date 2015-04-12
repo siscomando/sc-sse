@@ -2,14 +2,19 @@
 
 
 <!--
-sc-sse is webcomponent to Server Side Events of HTML5.
+sc-sse is a non-visual Web Component that receives HTML Server-Sent Events (SSE)
+on the client side.
 
+about SSE see:
+ https://html.spec.whatwg.org/multipage/comms.html#server-sent-events
+ http://www.html5rocks.com/en/tutorials/eventsource/basics/
+ 
 ##### Example
 
     <sc-sse stream="/stream/" channel="message" alias="updates"></sc-sse>
 
 @element sc-sse
-@blurb Element providing an interface to consume updates by Server Side Events
+@blurb non-visual Custom Element that consumes Server-Sent Events (SSE)
 @status beta
 @homepage http://github.com/siscomando/sc-sse
 -->
@@ -17,7 +22,7 @@ sc-sse is webcomponent to Server Side Events of HTML5.
   <script>
     Polymer('sc-sse', { 
        /**
-       * Fired when a reply is returned by Server Side Event.
+       * Fires when an event is received from Server-Sent Event stream.
        *
        *
        * @event sc-sse-response
@@ -51,31 +56,33 @@ sc-sse is webcomponent to Server Side Events of HTML5.
       },
       ready: function() {
         var stream = this.stream;
-        var callback = this.fire; //this.fire;
+        var callback = this.fire;
         var channel = this.channel;
-        var el = this;
+        var that = this;
 
         try {
           var source = new EventSource(stream);  
-          this.makeRead(source, channel, callback, el);
+          this.makeRead(source, channel, callback, that);
         } catch (x) {
-          console.warn('sc-sse caught an exception trying create new EventSource.');
-          console.warn(x);
+          console.warn('sc-sse: failed to create EventSource ' +x);
         }
       },
       /**
-       * The `makeRead` make connection with Server Side Event stream.
+       * `makeRead` opens connection to SSE stream and installs event handler client.
        *
        * 
        * @method makeRead
        * @param source an instance of EventSource
-       * @param channel a type of event 
-       * @param callback a callback for to work with polymer objects
-       * @param onNode this current polymer element
+       * @param channel an event type 
+       * @param callback a callback that works with Polymer objects
+       * @param that points to current Polymer element
        */       
-      makeRead: function(source, channel, callback, onNode) {
+      makeRead: function(source, channel, callback, that) {
         source.addEventListener(channel, function(e) {
-          callback('sc-sse-response', {response: e.data, alias: onNode.alias}, onNode);
+          if (e.origin != that.stream) {
+            console.log("sc-sse: discarding event from alien source " +e.origin)
+          else
+            callback('sc-sse-response', {response:e.data, alias:that.alias}, that);
         });
       },
     });
