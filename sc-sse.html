@@ -11,14 +11,14 @@ about SSE see:
  
 ##### Example
 
-    <sc-sse stream="/stream/" channel="message" alias="updates"></sc-sse>
+    <sc-sse stream="/stream/" event="message" alias="updates"></sc-sse>
 
 @element sc-sse
 @blurb non-visual Custom Element that consumes Server-Sent Events (SSE)
 @status beta
 @homepage http://github.com/siscomando/sc-sse
 -->
-<polymer-element name="sc-sse" hidden attributes="notitle author stream channel alias">
+<polymer-element name="sc-sse" hidden attributes="notitle author stream event alias">
   <script>
     Polymer('sc-sse', { 
        /**
@@ -51,18 +51,18 @@ about SSE see:
        */                   
       publish: {
         stream: '',
-        channel: 'message',
+        event: 'message',
         alias: 'default'
       },
       ready: function() {
         var stream = this.stream;
         var callback = this.fire;
-        var channel = this.channel;
+        var event = this.event;
         var that = this;
 
         try {
           var source = new EventSource(stream);  
-          this.makeRead(source, channel, callback, that);
+          this.makeRead(source, event, callback, that);
         } catch (x) {
           console.warn('sc-sse: failed to create EventSource ' +x);
         }
@@ -73,12 +73,12 @@ about SSE see:
        * 
        * @method makeRead
        * @param source an instance of EventSource
-       * @param channel an event type 
+       * @param event an event type 
        * @param callback a callback that works with Polymer objects
        * @param that points to current Polymer element
        */       
-      makeRead: function(source, channel, callback, that) {
-        source.addEventListener(channel, function(e) {
+      makeRead: function(source, event, callback, that) {
+        source.addEventListener(event, function(e) {
           if (e.origin != that.stream) {
             console.log("sc-sse: discarding event from alien source " +e.origin)
           else
