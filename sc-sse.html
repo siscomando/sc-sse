@@ -21,8 +21,7 @@ about SSE see:
 <polymer-element name="sc-sse" hidden attributes="notitle author stream event alias">
   <script>
     'use strict'
-    url= require('url')
-  
+
     Polymer('sc-sse', { 
        /**
        * Fires when an event is received from Server-Sent Event stream.
@@ -57,11 +56,18 @@ about SSE see:
         event: 'message',
         alias: 'default'
       },
+      
+      sender: '',
+      
       ready: function() {
         var stream = this.stream;
         var callback = this.fire;
         var event = this.event;
         var that = this;
+        
+        // prep security check: extract protocol (http[s]:) and host from URL
+        var m= getLocation(stream)
+        this.sender= m.protocol +'//' +m.host
 
         try {
           var source = new EventSource(stream);  
@@ -82,16 +88,27 @@ about SSE see:
        */       
       makeRead: function(source, event, callback, that) {
         source.addEventListener(event, function(e) {
-          var u= url.parse(that.stream)
-          var s= u.protocol +"://" +u.host
-          //if (e.origin != that.stream)
-          if (e.origin != s)
+          if (e.origin != that.sender)
             console.log("sc-sse: discarding event from alien source " +e.origin)
           else
             callback('sc-sse-response', {response:e.data, alias:that.alias}, that);
         });
       },
     });
+    
+    // from http://stackoverflow.com/questions/736513/how-do-i-parse-a-url-into-hostname-and-path-in-javascript
+    function getLocation(href) {
+      var match = href.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)(\/[^?#]*)(\?[^#]*|)(#.*|)$/);
+      return match && {
+          protocol: match[1],
+          host: match[2],
+          hostname: match[3],
+          port: match[4],
+          pathname: match[5],
+          search: match[6],
+          hash: match[7]
+      }
+    }
   </script>
 
 </polymer-element>
