@@ -2,22 +2,29 @@
 
 
 <!--
-sc-sse is webcomponent to Server Side Events of HTML5.
+sc-sse is a non-visual Web Component that receives HTML Server-Sent Events (SSE)
+on the client side.
 
+about SSE see:
+ https://html.spec.whatwg.org/multipage/comms.html#server-sent-events
+ http://www.html5rocks.com/en/tutorials/eventsource/basics/
+ 
 ##### Example
 
-    <sc-sse stream="/stream/" channel="message" alias="updates"></sc-sse>
+    <sc-sse stream="/stream/" event="message" alias="updates"></sc-sse>
 
 @element sc-sse
-@blurb Element providing an interface to consume updates by Server Side Events
+@blurb non-visual Custom Element that consumes Server-Sent Events (SSE)
 @status beta
 @homepage http://github.com/siscomando/sc-sse
 -->
-<polymer-element name="sc-sse" hidden attributes="notitle author stream channel alias">
+<polymer-element name="sc-sse" hidden attributes="notitle author stream event alias">
   <script>
+    'use strict'
+
     Polymer('sc-sse', { 
        /**
-       * Fired when a reply is returned by Server Side Event.
+       * Fires when an event is received from Server-Sent Event stream.
        *
        *
        * @event sc-sse-response
@@ -46,39 +53,62 @@ sc-sse is webcomponent to Server Side Events of HTML5.
        */                   
       publish: {
         stream: '',
-        channel: 'message',
+        event: 'message',
         alias: 'default'
       },
+      
+      sender: '',
+      
       ready: function() {
         var stream = this.stream;
-        var callback = this.fire; //this.fire;
-        var channel = this.channel;
-        var el = this;
+        var callback = this.fire;
+        var event = this.event;
+        var that = this;
+        
+        // prep security check: extract protocol (http[s]:) and host from URL
+        var m= getLocation(stream)
+        this.sender= m.protocol +'//' +m.host
 
         try {
           var source = new EventSource(stream);  
-          this.makeRead(source, channel, callback, el);
+          this.makeRead(source, event, callback, that);
         } catch (x) {
-          console.warn('sc-sse caught an exception trying create new EventSource.');
-          console.warn(x);
+          console.warn('sc-sse: failed to create EventSource ' +x);
         }
       },
       /**
-       * The `makeRead` make connection with Server Side Event stream.
+       * `makeRead` opens connection to SSE stream and installs event handler client.
        *
        * 
        * @method makeRead
        * @param source an instance of EventSource
-       * @param channel a type of event 
-       * @param callback a callback for to work with polymer objects
-       * @param onNode this current polymer element
+       * @param event an event type 
+       * @param callback a callback that works with Polymer objects
+       * @param that points to current Polymer element
        */       
-      makeRead: function(source, channel, callback, onNode) {
-        source.addEventListener(channel, function(e) {
-          callback('sc-sse-response', {response: e.data, alias: onNode.alias}, onNode);
+      makeRead: function(source, event, callback, that) {
+        source.addEventListener(event, function(e) {
+          if (e.origin != that.sender)
+            console.log("sc-sse: discarding event from alien source " +e.origin)
+          else
+            callback('sc-sse-response', {response:e.data, alias:that.alias}, that);
         });
       },
     });
+    
+    // from http://stackoverflow.com/questions/736513/how-do-i-parse-a-url-into-hostname-and-path-in-javascript
+    function getLocation(href) {
+      var match = href.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)(\/[^?#]*)(\?[^#]*|)(#.*|)$/);
+      return match && {
+          protocol: match[1],
+          host: match[2],
+          hostname: match[3],
+          port: match[4],
+          pathname: match[5],
+          search: match[6],
+          hash: match[7]
+      }
+    }
   </script>
 
 </polymer-element>
